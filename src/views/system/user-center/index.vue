@@ -5,34 +5,29 @@
         <div class="user-wrap box-style">
           <img class="bg" src="@imgs/user/bg.webp" />
           <img class="avatar" src="@imgs/user/avatar.webp" />
-          <h2 class="name">{{ userInfo.userName }}</h2>
+          <h2 class="name">{{ userInfo.nickName }}</h2>
           <p class="des">Art Design Pro 是一款漂亮的后台管理系统模版.</p>
 
           <div class="outer-info">
             <div>
               <i class="iconfont-sys">&#xe72e;</i>
-              <span>jdkjjfnndf@mall.com</span>
+              <span>{{ userInfo.email }}</span>
+            </div>
+            <div>
+              <i class="iconfont-sys">&#xe70d;</i>
+              <span>{{ userInfo.phonenumber }}</span>
             </div>
             <div>
               <i class="iconfont-sys">&#xe608;</i>
-              <span>交互专家</span>
+              <span>{{ userInfo.userName }}</span>
             </div>
             <div>
-              <i class="iconfont-sys">&#xe736;</i>
+              <i class="iconfont-sys">&#xe830;</i>
               <span>广东省深圳市</span>
             </div>
             <div>
               <i class="iconfont-sys">&#xe811;</i>
               <span>字节跳动－某某平台部－UED</span>
-            </div>
-          </div>
-
-          <div class="lables">
-            <h3>标签</h3>
-            <div>
-              <div v-for="item in lableList" :key="item">
-                {{ item }}
-              </div>
             </div>
           </div>
         </div>
@@ -202,8 +197,6 @@
       label: '女'
     }
   ]
-
-  const lableList: Array<string> = ['专注设计', '很有想法', '辣~', '大长腿', '川妹子', '海纳百川']
 
   onMounted(() => {
     getDate()
