@@ -91,7 +91,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined
 
   // 处理标准格式或直接列表
-  const recordFields = ['records', 'data', 'list', 'items', 'result']
+  const recordFields = ['records', 'data', 'rows', 'list', 'items', 'result']
   records = extractRecords(res, recordFields)
   total = extractTotal(res, records, ['total', 'count'])
   pagination = extractPagination(res)
@@ -99,7 +99,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   // 如果没有找到，检查嵌套data
   if (records.length === 0 && 'data' in res && typeof res.data === 'object') {
     const data = res.data as Record<string, unknown>
-    records = extractRecords(data, ['list', 'records', 'items'])
+    records = extractRecords(data, ['list', 'records', 'rows', 'items'])
     total = extractTotal(data, records, ['total', 'count'])
     pagination = extractPagination(res, data)
 
@@ -110,9 +110,9 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   }
 
   // 如果还是没有找到，使用兜底
-  if (records.length === 0) {
-    console.warn('[tableUtils] 无法识别的响应格式:', response)
-  }
+  // if (records.length === 0) {
+  //   console.warn('[tableUtils] 无法识别的响应格式:', response)
+  // }
 
   const result: ApiResponse<T> = { records, total }
   if (pagination) {
@@ -139,16 +139,16 @@ export const updatePaginationFromResponse = <T>(
   pagination.total = response.total ?? pagination.total ?? 0
 
   if (response.current !== undefined) {
-    pagination.current = response.current
+    pagination.pageNum = response.current
   }
 
   if (response.size !== undefined) {
-    pagination.size = response.size
+    pagination.pageSize = response.size
   }
 
-  const maxPage = Math.max(1, Math.ceil(pagination.total / (pagination.size || 1)))
-  if (pagination.current > maxPage) {
-    pagination.current = maxPage
+  const maxPage = Math.max(1, Math.ceil(pagination.total / (pagination.pageSize || 1)))
+  if (pagination.pageSize > maxPage) {
+    pagination.pageNum = maxPage
   }
 }
 

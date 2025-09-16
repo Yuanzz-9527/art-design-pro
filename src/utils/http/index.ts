@@ -3,11 +3,13 @@ import { useUserStore } from '@/store/modules/user'
 import { ApiStatus } from './status'
 import { HttpError, handleError, showError } from './error'
 import { $t } from '@/locales'
+import { tansParams } from '@/utils/dataprocess'
+import FileSaver from 'file-saver'
 
 // 常量定义
 const REQUEST_TIMEOUT = 15000 // 请求超时时间(毫秒)
 const LOGOUT_DELAY = 1000 // 退出登录延迟时间(毫秒)
-const MAX_RETRIES = 2 // 最大重试次数
+const MAX_RETRIES = 0 // 最大重试次数
 const RETRY_DELAY = 1000 // 重试延迟时间(毫秒)
 
 // 扩展 AxiosRequestConfig 类型
@@ -34,25 +36,41 @@ const axiosInstance = axios.create({
       }
       return data
     }
-  ]
+  ],
+  // ⭐ GET 请求参数序列化
+  paramsSerializer: (params) => {
+    const buildQuery = (obj: Record<string, any>, prefix = ''): string[] => {
+      const pairs: string[] = []
+      for (const key in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue
+        const value = obj[key]
+        const k = prefix ? `${prefix}[${key}]` : key
+        if (value !== null && typeof value === 'object') {
+          pairs.push(...buildQuery(value, k))
+        } else if (value !== undefined) {
+          pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(value)}`)
+        }
+      }
+      return pairs
+    }
+    return buildQuery(params).join('&')
+  }
 })
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const { accessToken } = useUserStore()
-
+    const isToken = (request.headers || {}).isToken === false
     // 设置 token
-    if (accessToken) {
+    if (accessToken && !isToken) {
       request.headers.set('Authorization', accessToken)
     }
-
     // 根据请求数据类型设置 Content-Type
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')
       request.data = JSON.stringify(request.data)
     }
-
     return request
   },
   (error) => {
@@ -65,7 +83,13 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<Api.Http.BaseResponse>) => {
     const { code, msg } = response.data
-
+    // 二进制数据则直接返回
+    if (
+      response.request.responseType === 'blob' ||
+      response.request.responseType === 'arraybuffer'
+    ) {
+      return response
+    }
     switch (code) {
       case ApiStatus.success:
         return response
@@ -120,7 +144,7 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
 
   try {
     const res = await axiosInstance.request<Api.Http.BaseResponse<T>>(config)
-    return res.data.data as T
+    return res.data as T
   } catch (error) {
     if (error instanceof HttpError) {
       // 根据配置决定是否显示错误消息
@@ -155,6 +179,49 @@ const logOut = (): void => {
   setTimeout(() => {
     useUserStore().logOut()
   }, LOGOUT_DELAY)
+}
+
+/**
+ * 下载文件
+ * @param url 下载地址
+ * @param params 请求参数
+ * @param fileName 文件名
+ * @param config 自定义请求配置
+ */
+export const downloadFile = async (
+  url: string,
+  params: Record<string, any>,
+  fileName: string,
+  config?: ExtendedAxiosRequestConfig
+) => {
+  const loading = ElLoading.service({
+    text: '正在下载数据，请稍候',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
+  try {
+    const response = await axiosInstance.post(url, params, {
+      transformRequest: [(params) => tansParams(params)],
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      responseType: 'blob',
+      ...config
+    })
+    const data = response.data as unknown as Blob
+    const isBlob = data.type !== 'application/json'
+
+    if (isBlob) {
+      const blob = new Blob([data])
+      FileSaver.saveAs(blob, fileName)
+    } else {
+      const resText = await (data as any).text()
+      const rspObj = JSON.parse(resText)
+      ElMessage.error(rspObj.msg)
+    }
+  } catch (error) {
+    console.error(error)
+    ElMessage.error('下载文件出现错误，请联系管理员！')
+  } finally {
+    loading.close()
+  }
 }
 
 export default api

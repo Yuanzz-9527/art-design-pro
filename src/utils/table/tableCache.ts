@@ -16,6 +16,7 @@ export enum CacheInvalidationStrategy {
 export interface ApiResponse<T = unknown> {
   records?: T[]
   data?: T[]
+  rows?: T[]
   total?: number
   current?: number
   size?: number
