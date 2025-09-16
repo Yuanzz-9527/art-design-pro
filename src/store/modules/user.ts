@@ -27,12 +27,20 @@ export const useUserStore = defineStore(
     const lockPassword = ref('')
     // 用户信息
     const info = ref<Partial<Api.User.UserInfo>>({})
+    // 用户是否为默认密码
+    const isDefaultModifyPwd = ref(false)
+    // 用户密码是否过期
+    const isPasswordExpired = ref(false)
     // 搜索历史记录
     const searchHistory = ref<AppRouteRecord[]>([])
     // 访问令牌
     const accessToken = ref('')
     // 刷新令牌
     const refreshToken = ref('')
+    // 用户权限
+    const permissions = ref<string[]>([])
+    // 用户角色
+    const roles = ref<string[]>([])
 
     // 计算属性：获取用户信息
     const getUserInfo = computed(() => info.value)
@@ -40,6 +48,10 @@ export const useUserStore = defineStore(
     const getSettingState = computed(() => useSettingStore().$state)
     // 计算属性：获取工作台状态
     const getWorktabState = computed(() => useWorktabStore().$state)
+    // 计算属性：获取用户权限
+    const getPermissionsState = computed(() => permissions.value)
+    // 计算属性：获取用户角色
+    const getRolesState = computed(() => roles.value)
 
     /**
      * 设置用户信息
@@ -49,6 +61,19 @@ export const useUserStore = defineStore(
       info.value = newInfo
     }
 
+    /**
+     * 设置用户权限
+     */
+    const setPermissions = (permissions_: string[]) => {
+      permissions.value = permissions_
+    }
+
+    /**
+     * 设置用户角色
+     */
+    const setRoles = (roles_: string[]) => {
+      roles.value = roles_
+    }
     /**
      * 设置登录状态
      * @param status 登录状态
@@ -103,16 +128,40 @@ export const useUserStore = defineStore(
     }
 
     /**
+     * 更新默认密码状态
+     * @param status //新状态
+     */
+    const setDefaultModifyPwd = (status: boolean) => {
+      isDefaultModifyPwd.value = status
+    }
+
+    /**
+     * 更新密码过期状态
+     * @param status //新状态
+     */
+    const setPasswordExpired = (status: boolean) => {
+      isPasswordExpired.value = status
+    }
+
+    /**
      * 退出登录
      * 清空所有用户相关状态并跳转到登录页
      */
     const logOut = () => {
       // 清空用户信息
       info.value = {}
+      // 清空用户权限
+      permissions.value = []
+      // 清空用户角色
+      roles.value = []
       // 重置登录状态
       isLogin.value = false
       // 重置锁屏状态
       isLock.value = false
+      // 用户是否为默认密码
+      isDefaultModifyPwd.value = false
+      // 密码是否过期
+      isPasswordExpired.value = false
       // 清空锁屏密码
       lockPassword.value = ''
       // 清空访问令牌
@@ -137,19 +186,27 @@ export const useUserStore = defineStore(
       isLock,
       lockPassword,
       info,
+      permissions,
+      roles,
       searchHistory,
       accessToken,
       refreshToken,
       getUserInfo,
+      getPermissionsState,
+      getRolesState,
       getSettingState,
       getWorktabState,
       setUserInfo,
+      setRoles,
+      setPermissions,
       setLoginStatus,
       setLanguage,
       setSearchHistory,
       setLockStatus,
       setLockPassword,
       setToken,
+      setDefaultModifyPwd,
+      setPasswordExpired,
       logOut
     }
   },

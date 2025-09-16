@@ -159,8 +159,13 @@ async function handleDynamicRoutes(
     const isRefresh = from.path === '/'
     if (isRefresh || !userStore.info || Object.keys(userStore.info).length === 0) {
       try {
-        const data = await UserService.getUserInfo()
-        userStore.setUserInfo(data)
+        const userRes = await UserService.getUserInfo()
+        const userInfo = userRes.user
+        userInfo.roles = userRes.roles
+        userInfo.permissions = userRes.permissions
+        userStore.setUserInfo(userInfo)
+        userStore.setDefaultModifyPwd(userRes.isDefaultModifyPwd)
+        userStore.setPasswordExpired(userRes.isPasswordExpired)
       } catch (error) {
         console.error('获取用户信息失败', error)
       }

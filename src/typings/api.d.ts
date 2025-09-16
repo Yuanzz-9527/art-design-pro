@@ -23,32 +23,57 @@ declare namespace Api {
     /** 分页参数 */
     interface PaginatingParams {
       /** 当前页码 */
-      current: number
+      pageNum: number
       /** 每页条数 */
-      size: number
+      pageSize: number
       /** 总条数 */
       total: number
     }
 
     /** 通用搜索参数 */
-    type PaginatingSearchParams = Pick<PaginatingParams, 'current' | 'size'>
+    type PaginatingSearchParams = Pick<PaginatingParams, 'pageNum' | 'pageSize'>
 
     /** 启用状态 */
     type EnableStatus = '1' | '2'
+
+    /** 通用数据响应 */
+    interface DataResponse<T = any> {
+      msg: string
+      data: T
+      code: number
+      [key: string]: any
+    }
+
+    /** 列表数据响应 */
+    interface ListResponse<T extends RouyiListItem = RouyiListItem> {
+      msg: string
+      rows: T[]
+      code: number
+      [key: string]: any
+    }
   }
 
   /** 认证类型 */
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
+      code: number
+      uuid: string
     }
 
     /** 登录响应 */
     interface LoginResponse {
       token: string
-      refreshToken: string
+      refreshToken?: string
+    }
+
+    /** 验证码响应 */
+    interface CaptchaImageResponse {
+      captchaEnabled: true | false
+      img: string
+      uuid: string
     }
   }
 
@@ -58,11 +83,29 @@ declare namespace Api {
     interface UserInfo {
       userId: number
       userName: string
+      nickName: string
+      sex: '0' | '1' | '2'
       roles: string[]
-      buttons: string[]
+      permissions: string[]
+      deptId?: number
+      dept?: {
+        deptName: string
+      }
       avatar?: string
       email?: string
       phone?: string
+      admin?: true | false
+      phonenumber?: string
+      email?: string
+    }
+
+    /** 查询用户信息响应（getInfo） */
+    interface UserInfoResponse {
+      isPasswordExpired: true | false
+      isDefaultModifyPwd: true | false
+      permissions: string[]
+      roles: string[]
+      user: UserInfo
     }
 
     /** 用户列表数据 */

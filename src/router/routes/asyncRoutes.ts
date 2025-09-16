@@ -23,7 +23,7 @@ export const asyncRoutes: AppRouteRecord[] = [
     meta: {
       title: 'menus.dashboard.title',
       icon: '&#xe721;',
-      roles: ['R_SUPER', 'R_ADMIN'] // 角色权限，前端控制模式（只有拥有这些角色的用户才能访问）
+      roles: ['admin', 'R_ADMIN'] // 角色权限，前端控制模式（只有拥有这些角色的用户才能访问）
     },
     children: [
       {
@@ -329,7 +329,7 @@ export const asyncRoutes: AppRouteRecord[] = [
     meta: {
       title: 'menus.system.title',
       icon: '&#xe7b9;',
-      roles: ['R_SUPER', 'R_ADMIN']
+      roles: ['admin', 'R_ADMIN']
     },
     children: [
       {
@@ -339,7 +339,7 @@ export const asyncRoutes: AppRouteRecord[] = [
         meta: {
           title: 'menus.system.user',
           keepAlive: true,
-          roles: ['R_SUPER', 'R_ADMIN']
+          roles: ['admin', 'R_ADMIN']
         }
       },
       {
@@ -349,7 +349,7 @@ export const asyncRoutes: AppRouteRecord[] = [
         meta: {
           title: 'menus.system.role',
           keepAlive: true,
-          roles: ['R_SUPER']
+          roles: ['admin']
         }
       },
       {
@@ -359,8 +359,8 @@ export const asyncRoutes: AppRouteRecord[] = [
         meta: {
           title: 'menus.system.userCenter',
           isHide: true,
-          keepAlive: true,
-          isHideTab: true
+          keepAlive: true
+          // isHideTab: true
         }
       },
       {
@@ -370,7 +370,7 @@ export const asyncRoutes: AppRouteRecord[] = [
         meta: {
           title: 'menus.system.menu',
           keepAlive: true,
-          roles: ['R_SUPER'],
+          roles: ['admin'],
           authList: [
             {
               title: '新增',
@@ -483,7 +483,7 @@ export const asyncRoutes: AppRouteRecord[] = [
     meta: {
       title: 'menus.article.title',
       icon: '&#xe7ae;',
-      roles: ['R_SUPER', 'R_ADMIN']
+      roles: ['admin', 'R_ADMIN']
     },
     children: [
       {
@@ -640,7 +640,7 @@ export const asyncRoutes: AppRouteRecord[] = [
       title: 'menus.help.title',
       icon: '&#xe719;',
       keepAlive: false,
-      roles: ['R_SUPER', 'R_ADMIN']
+      roles: ['admin', 'R_ADMIN']
     },
     children: [
       {

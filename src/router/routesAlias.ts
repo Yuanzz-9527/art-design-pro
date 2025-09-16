@@ -7,6 +7,7 @@ export enum RoutesAlias {
   Layout = '/index/index', // 布局容器
   Login = '/auth/login', // 登录
   Register = '/auth/register', // 注册
+  UserCenter = '/user/center', // 用户中心
   ForgetPassword = '/auth/forget-password', // 忘记密码
   Exception403 = '/exception/403', // 403
   Exception404 = '/exception/404', // 404
@@ -42,7 +43,7 @@ export enum RoutesAlias {
   ArticlePublish = '/article/publish', // 文章发布
   User = '/system/user', // 账户
   Role = '/system/role', // 角色
-  UserCenter = '/system/user-center', // 用户中心
+  // UserCenter = '/system/user-center', // 用户中心
   Menu = '/system/menu', // 菜单
   NestedMenu1 = '/system/nested/menu1', // 嵌套菜单1
   NestedMenu21 = '/system/nested/menu2', // 嵌套菜单2-1

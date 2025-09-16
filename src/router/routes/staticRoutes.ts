@@ -24,6 +24,24 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     component: () => import('@views/auth/forget-password/index.vue'),
     meta: { title: 'menus.forgetPassword.title', isHideTab: true, noLogin: true, setTheme: true }
   },
+  // 用户中心
+  {
+    path: '/user',
+    name: 'User_',
+    component: () => import('@views/index/index.vue'),
+    meta: { title: 'menus.user.title' },
+    children: [
+      {
+        path: 'center',
+        name: 'UserCenter_',
+        component: () => import('@views/system/user-center/index.vue'),
+        meta: {
+          title: 'menus.user.center',
+          keepAlive: true
+        }
+      }
+    ]
+  },
   {
     path: '/exception',
     component: () => import('@views/index/index.vue'),

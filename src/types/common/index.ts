@@ -3,10 +3,10 @@
  */
 
 // 状态类型
-export type Status = 0 | 1 // 0: 禁用, 1: 启用
+export type Status = '0' | '1' // 0: 启用 , 1: 禁用
 
 // 性别类型
-export type Gender = 'male' | 'female' | 'unknown'
+export type Gender = '0' | '1' | '2' // 0: 男, 1: 女, 3: 未知
 
 // 排序方向
 export type SortOrder = 'ascending' | 'descending'
@@ -16,6 +16,15 @@ export type ActionType = 'create' | 'update' | 'delete' | 'view'
 
 // 可选的记录类型
 export type Recordable<T = any> = Record<string, T>
+
+// 若依列表类型
+export interface RouyiListItem {
+  createBy?: string // 创建人
+  createTime?: string // 创建时间
+  remark?: string // 备注
+  updateBy?: string // 更新人
+  updateTime?: string // 更新时间
+}
 
 // 键值对类型
 export type KeyValue<T = any> = {
