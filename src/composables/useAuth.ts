@@ -17,12 +17,12 @@ const userStore = useUserStore()
 export const useAuth = () => {
   const route = useRoute()
   const { isFrontendMode } = useCommon()
-  const { info } = storeToRefs(userStore)
+  const { permissions } = storeToRefs(userStore)
 
-  // 前端按钮权限（例如：['add', 'edit']）
-  const frontendAuthList = info.value?.buttons ?? []
+  // 按钮权限（例如：['add', 'edit']）
+  const frontendAuthList = permissions?.value ?? []
 
-  // 后端路由 meta 配置的权限列表（例如：[{ authMark: 'add' }]）
+  // 路由 meta 配置的权限列表（例如：[{ authMark: 'add' }]）
   const backendAuthList: AuthItem[] = Array.isArray(route.meta.authList)
     ? (route.meta.authList as AuthItem[])
     : []
@@ -35,6 +35,7 @@ export const useAuth = () => {
   const hasAuth = (auth: string): boolean => {
     // 前端模式
     if (isFrontendMode.value) {
+      if (frontendAuthList.length === 1 && frontendAuthList[0] === '*:*:*') return true
       return frontendAuthList.includes(auth)
     }
 
@@ -42,7 +43,16 @@ export const useAuth = () => {
     return backendAuthList.some((item) => item?.authMark === auth)
   }
 
+  const hasAuths = (auths: string[]): boolean => {
+    if (isFrontendMode.value) {
+      if (frontendAuthList.length === 1 && frontendAuthList[0] === '*:*:*') return true
+      return auths.some((auth) => frontendAuthList.includes(auth))
+    }
+    return auths.some((auth) => backendAuthList.some((item) => item?.authMark === auth))
+  }
+
   return {
-    hasAuth
+    hasAuth,
+    hasAuths
   }
 }
