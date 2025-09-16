@@ -219,6 +219,10 @@
       "analysis": "Analysis",
       "ecommerce": "Ecommerce"
     },
+    "user": {
+      "title": "User",
+      "center": "User Center"
+    },
     "widgets": {
       "title": "Components",
       "iconList": "Icon List",
