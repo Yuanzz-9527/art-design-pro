@@ -43,7 +43,7 @@
             @keyup.enter="handleSubmit"
             style="margin-top: 25px"
           >
-            <ElFormItem prop="account">
+            <!-- <ElFormItem prop="account">
               <ElSelect v-model="formData.account" @change="setupAccount" class="account-select">
                 <ElOption
                   v-for="account in accounts"
@@ -54,7 +54,7 @@
                   <span>{{ account.label }}</span>
                 </ElOption>
               </ElSelect>
-            </ElFormItem>
+            </ElFormItem> -->
             <ElFormItem prop="username">
               <ElInput :placeholder="$t('login.placeholder[0]')" v-model.trim="formData.username" />
             </ElFormItem>
@@ -135,40 +135,6 @@
   import { useSettingStore } from '@/store/modules/setting'
   import type { FormInstance, FormRules } from 'element-plus'
 
-  type AccountKey = 'super' | 'admin' | 'user'
-
-  export interface Account {
-    key: AccountKey
-    label: string
-    userName: string
-    password: string
-    roles: string[]
-  }
-
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
-
   const settingStore = useSettingStore()
   const { isDark, systemThemeType } = storeToRefs(settingStore)
 
@@ -176,6 +142,7 @@
 
   const userStore = useUserStore()
   const router = useRouter()
+  const route = useRoute()
   const isPassing = ref(false)
   const isClickPass = ref(false)
 
@@ -183,9 +150,10 @@
   const formRef = ref<FormInstance>()
 
   const formData = reactive({
-    account: '',
-    username: '',
-    password: '',
+    uuid: '',
+    code: 0,
+    username: 'admin',
+    password: 'admin123',
     rememberPassword: true
   })
 
@@ -197,15 +165,20 @@
   const loading = ref(false)
 
   onMounted(() => {
-    setupAccount('super')
+    getImageCode()
   })
 
-  // 设置账号
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
+  const codeImg = ref('')
+  // 获取图像验证
+  const getImageCode = async () => {
+    try {
+      const { img, uuid } = await UserService.getCodeImg()
+      codeImg.value = img
+      formData.uuid = uuid
+    } catch (error) {
+      // 可以根据需要处理错误，例如显示消息
+      console.error('获取图像验证码失败:', error)
+    }
   }
 
   // 登录
@@ -226,11 +199,13 @@
       loading.value = true
 
       // 登录请求
-      const { username, password } = formData
+      const { username, password, code, uuid } = formData
 
       const { token, refreshToken } = await UserService.login({
-        userName: username,
-        password
+        username,
+        password,
+        code,
+        uuid
       })
 
       // 验证token
@@ -240,13 +215,17 @@
 
       // 存储token和用户信息
       userStore.setToken(token, refreshToken)
-      const userInfo = await UserService.getUserInfo()
-      userStore.setUserInfo(userInfo)
+      const userRes = await UserService.getUserInfo()
+      userStore.setUserInfo(userRes.user)
+      userStore.setPermissions(userRes.permissions)
+      userStore.setRoles(userRes.roles)
+      userStore.setDefaultModifyPwd(userRes.isDefaultModifyPwd)
+      userStore.setPasswordExpired(userRes.isPasswordExpired)
       userStore.setLoginStatus(true)
 
       // 登录成功处理
       showLoginSuccessNotice()
-      router.push('/')
+      router.push(route.query?.redirect ? (route.query.redirect as string) : '/')
     } catch (error) {
       // 处理 HttpError
       if (error instanceof HttpError) {
