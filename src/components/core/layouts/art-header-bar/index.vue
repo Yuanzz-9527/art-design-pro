@@ -79,7 +79,7 @@
           </div>
         </div>
         <!-- 语言 -->
-        <div class="btn-box" v-if="shouldShowLanguage">
+        <!-- <div class="btn-box" v-if="shouldShowLanguage">
           <ElDropdown @command="changeLanguage" popper-class="langDropDownStyle">
             <div class="btn language-btn">
               <i class="iconfont-sys">&#xe611;</i>
@@ -98,7 +98,7 @@
               </ElDropdownMenu>
             </template>
           </ElDropdown>
-        </div>
+        </div> -->
         <!-- 设置 -->
         <div class="btn-box" v-if="shouldShowSettings" @click="openSetting">
           <ElPopover :visible="showSettingGuide" placement="bottom-start" :width="190" :offset="0">
@@ -145,22 +145,14 @@
                 <div class="user-head">
                   <img class="cover" src="@imgs/user/avatar.webp" style="float: left" />
                   <div class="user-wrap">
-                    <span class="name">{{ userInfo.userName }}</span>
-                    <span class="email">art.design@gmail.com</span>
+                    <span class="name">{{ userInfo.nickName }}</span>
+                    <span class="email">{{ userInfo.dept?.deptName || userInfo.email }}</span>
                   </div>
                 </div>
                 <ul class="user-menu">
-                  <li @click="goPage('/system/user-center')">
+                  <li @click="goPage('/user/center')">
                     <i class="menu-icon iconfont-sys">&#xe734;</i>
                     <span class="menu-txt">{{ $t('topBar.user.userCenter') }}</span>
-                  </li>
-                  <li @click="toDocs()">
-                    <i class="menu-icon iconfont-sys" style="font-size: 15px">&#xe828;</i>
-                    <span class="menu-txt">{{ $t('topBar.user.docs') }}</span>
-                  </li>
-                  <li @click="toGithub()">
-                    <i class="menu-icon iconfont-sys">&#xe8d6;</i>
-                    <span class="menu-txt">{{ $t('topBar.user.github') }}</span>
                   </li>
                   <li @click="lockScreen()">
                     <i class="menu-icon iconfont-sys">&#xe817;</i>
@@ -188,13 +180,14 @@
   import { useRouter } from 'vue-router'
   import { ElMessageBox } from 'element-plus'
   import { useFullscreen, useWindowSize } from '@vueuse/core'
-  import { LanguageEnum, MenuTypeEnum, MenuWidth } from '@/enums/appEnum'
+  // import { LanguageEnum, MenuTypeEnum, MenuWidth } from '@/enums/appEnum'
+  import { MenuTypeEnum, MenuWidth } from '@/enums/appEnum'
   import { useSettingStore } from '@/store/modules/setting'
   import { useUserStore } from '@/store/modules/user'
   import { useMenuStore } from '@/store/modules/menu'
   import AppConfig from '@/config'
-  import { languageOptions } from '@/locales'
-  import { WEB_LINKS } from '@/utils/constants'
+  // import { languageOptions } from '@/locales'
+  // import { WEB_LINKS } from '@/utils/constants'
   import { mittBus } from '@/utils/sys'
   import { themeAnimation } from '@/utils/theme/animation'
   import { useCommon } from '@/composables/useCommon'
@@ -223,7 +216,7 @@
     shouldShowFullscreen,
     shouldShowNotification,
     shouldShowChat,
-    shouldShowLanguage,
+    // shouldShowLanguage,
     shouldShowSettings,
     shouldShowThemeToggle,
     fastEnterMinWidth: headerBarFastEnterMinWidth
@@ -305,16 +298,16 @@
   /**
    * 打开文档页面
    */
-  const toDocs = (): void => {
-    window.open(WEB_LINKS.DOCS)
-  }
+  // const toDocs = (): void => {
+  //   window.open(WEB_LINKS.DOCS)
+  // }
 
   /**
    * 打开 GitHub 页面
    */
-  const toGithub = (): void => {
-    window.open(WEB_LINKS.GITHUB)
-  }
+  // const toGithub = (): void => {
+  //   window.open(WEB_LINKS.GITHUB)
+  // }
 
   /**
    * 跳转到首页
@@ -360,12 +353,12 @@
    * 切换系统语言
    * @param {LanguageEnum} lang - 目标语言类型
    */
-  const changeLanguage = (lang: LanguageEnum): void => {
-    if (locale.value === lang) return
-    locale.value = lang
-    userStore.setLanguage(lang)
-    reload(50)
-  }
+  // const changeLanguage = (lang: LanguageEnum): void => {
+  //   if (locale.value === lang) return
+  //   locale.value = lang
+  //   userStore.setLanguage(lang)
+  //   reload(50)
+  // }
 
   /**
    * 打开设置面板
