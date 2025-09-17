@@ -4,6 +4,8 @@ dist
 dist-ssr
 *.local
 .cursorrules
+.idea
+.vscode
 
 src/types/auto-imports.d.ts
 src/types/components.d.ts
