@@ -21,7 +21,7 @@ export interface User {
 
 export class UserService {
   // 用户列表
-  static listUser(params: Api.Common.PaginatingSearchParams) {
+  static listUser(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
     return request.get<Api.Common.ListResponse<User>>({
       url: '/system/user/list',
       params
@@ -111,7 +111,7 @@ export class UserService {
   }
 
   // 用户头像上传
-  static uploadAvatar(params) {
+  static uploadAvatar(params: FormData) {
     return request.post({
       url: '/system/user/profile/avatar',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -127,7 +127,7 @@ export class UserService {
   }
 
   // 保存授权角色
-  static updateAuthRole(params) {
+  static updateAuthRole(params: Record<string, unknown>) {
     return request.put({
       url: '/system/user/authRole',
       params

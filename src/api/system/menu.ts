@@ -23,7 +23,7 @@ export interface Menu {
 }
 export class MenuService {
   // 查询菜单列表
-  static listMenu(params: Record<string, string | undefined>) {
+  static listMenu(params?: Record<string, unknown>) {
     return request.get<Api.Common.DataResponse<Menu[]>>({
       url: '/system/menu/list',
       params

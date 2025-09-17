@@ -19,7 +19,7 @@ export interface Role {
 
 export class RoleService {
   // 查询角色列表
-  static listRole(params: Api.Common.PaginatingSearchParams) {
+  static listRole(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
     return request.get<Api.Common.ListResponse<Role>>({
       url: '/system/role/list',
       params
