@@ -9,7 +9,6 @@ import { RoutesAlias } from '../routesAlias'
  */
 export const menuDataToRouter = (route: AppRouteRecord, parentPath = ''): AppRouteRecord => {
   const fullPath = buildRoutePath(route, parentPath)
-
   // 检测组件配置并给出警告
   validateComponent(route, parentPath)
 

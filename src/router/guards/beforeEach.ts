@@ -160,12 +160,12 @@ async function handleDynamicRoutes(
     if (isRefresh || !userStore.info || Object.keys(userStore.info).length === 0) {
       try {
         const userRes = await UserService.getUserInfo()
-        const userInfo = userRes.user
-        userInfo.roles = userRes.roles
-        userInfo.permissions = userRes.permissions
-        userStore.setUserInfo(userInfo)
+        userStore.setUserInfo(userRes.user)
+        userStore.setPermissions(userRes.permissions)
+        userStore.setRoles(userRes.roles)
         userStore.setDefaultModifyPwd(userRes.isDefaultModifyPwd)
         userStore.setPasswordExpired(userRes.isPasswordExpired)
+        userStore.setLoginStatus(true)
       } catch (error) {
         console.error('获取用户信息失败', error)
       }
@@ -212,7 +212,7 @@ async function getMenuData(router: Router): Promise<void> {
 async function processFrontendMenu(router: Router): Promise<void> {
   const menuList = asyncRoutes.map((route) => menuDataToRouter(route))
   const userStore = useUserStore()
-  const roles = userStore.info.roles
+  const roles = userStore.roles
 
   if (!roles) {
     throw new Error('获取用户角色失败')
@@ -253,7 +253,9 @@ function filterEmptyMenus(menuList: AppRouteRecord[]): AppRouteRecord[] {
     .filter((item) => {
       // 过滤掉布局组件且没有子菜单的项
       const isEmptyLayoutMenu =
-        item.component === RoutesAlias.Layout && (!item.children || item.children.length === 0)
+        item.component === RoutesAlias.Layout &&
+        (!item.children || item.children.length === 0) &&
+        item.meta.isIframe !== true
 
       // 过滤掉组件为空字符串且没有子菜单的项
       const isEmptyComponentMenu =
