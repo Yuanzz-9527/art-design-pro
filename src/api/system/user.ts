@@ -15,6 +15,7 @@ export interface User {
   status: Status
   userId: number
   userName: string
+  remark: string
   postIds: number[]
   roleIds: number[]
 }

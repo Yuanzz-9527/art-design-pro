@@ -154,7 +154,13 @@
       </ElDialog>
 
       <!-- 分配数据权限弹框 -->
-      <ElDialog title="分配数据权限" v-model="modalVisible" width="500px" align-center>
+      <ElDialog
+        title="分配数据权限"
+        v-model="modalVisible"
+        width="500px"
+        align-center
+        :close-on-click-modal="false"
+      >
         <ElForm :model="form" label-width="85px">
           <ElRow>
             <ElCol :span="24">

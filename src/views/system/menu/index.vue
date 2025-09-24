@@ -32,7 +32,13 @@
         :stripe="false"
       />
 
-      <ElDialog :title="dialogTitle" v-model="dialogVisible" width="700px" align-center>
+      <ElDialog
+        :title="dialogTitle"
+        v-model="dialogVisible"
+        width="700px"
+        align-center
+        :close-on-click-modal="false"
+      >
         <ElForm ref="formRef" :model="form" :rules="rules" label-width="85px">
           <ElFormItem label="上级菜单" prop="parentId">
             <ElTreeSelect

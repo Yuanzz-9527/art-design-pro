@@ -4,6 +4,7 @@
     :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
     width="35%"
     align-center
+    :close-on-click-modal="false"
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
       <ElRow>
