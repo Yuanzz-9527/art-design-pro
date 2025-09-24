@@ -204,7 +204,7 @@
   }
 
   // 表单配置项
-  const formItems: SearchFormItem[] = [
+  const formItems = computed<SearchFormItem[]>(() => [
     {
       label: '菜单名称',
       prop: 'menuName',
@@ -222,7 +222,7 @@
       },
       options: dict.sys_normal_disable
     }
-  ]
+  ])
 
   // 构建菜单类型标签
   const buildMenuTypeTag = (row: Menu) => {

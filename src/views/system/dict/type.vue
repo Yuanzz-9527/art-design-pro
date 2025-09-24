@@ -1,5 +1,5 @@
 <template>
-  <div class="post-page art-full-height">
+  <div class="type-page art-full-height">
     <!-- 搜索栏 -->
     <ArtSearchBar
       v-model:filter="formFilters"
@@ -17,7 +17,7 @@
             type="primary"
             plain
             v-ripple
-            v-auth="'system:post:add'"
+            v-auth="'system:dict:add'"
             >新增</ElButton
           >
           <ElButton
@@ -25,7 +25,7 @@
             type="success"
             plain
             :disabled="single"
-            v-auth="'system:post:edit'"
+            v-auth="'system:dict:edit'"
             v-ripple
           >
             修改</ElButton
@@ -35,7 +35,7 @@
             type="danger"
             plain
             :disabled="multiple"
-            v-auth="'system:post:remove'"
+            v-auth="'system:dict:remove'"
             v-ripple
           >
             删除</ElButton
@@ -44,7 +44,7 @@
             @click="handleExport()"
             type="warning"
             plain
-            v-auth="'system:post:export'"
+            v-auth="'system:dict:export'"
             v-ripple
             >导出</ElButton
           >
@@ -69,7 +69,7 @@
         </template>
       </ArtTable>
 
-      <!-- 新增/编辑岗位信息弹框 -->
+      <!-- 新增/编辑字典类型弹框 -->
       <ElDialog
         :title="dialogTitle"
         v-model="dialogVisible"
@@ -80,23 +80,13 @@
         <ElForm ref="formRef" :model="form" :rules="rules" label-width="85px">
           <ElRow>
             <ElCol :span="24">
-              <ElFormItem label="岗位编码" prop="postCode">
-                <ElInput v-model="form.postCode" placeholder="请输入岗位编码"></ElInput>
+              <ElFormItem label="字典名称" prop="dictName">
+                <ElInput v-model="form.dictName" placeholder="请输入字典名称"></ElInput>
               </ElFormItem>
             </ElCol>
             <ElCol :span="24">
-              <ElFormItem label="岗位名称" prop="postName">
-                <ElInput v-model="form.postName" placeholder="请输入岗位名称"></ElInput>
-              </ElFormItem>
-            </ElCol>
-            <ElCol :span="24">
-              <ElFormItem label="显示顺序" prop="postSort">
-                <ElInputNumber
-                  v-model="form.postSort"
-                  style="width: 100%"
-                  :min="1"
-                  controls-position="right"
-                />
+              <ElFormItem label="字典类型" prop="dictType">
+                <ElInput v-model="form.dictType" placeholder="请输入字典类型"></ElInput>
               </ElFormItem>
             </ElCol>
             <ElCol :span="24">
@@ -109,6 +99,11 @@
                     >{{ dict.label }}</ElRadio
                   >
                 </ElRadioGroup>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="24">
+              <ElFormItem label="备注" prop="remark">
+                <ElInput v-model="form.remark" type="textarea" placeholder="请输入内容" />
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -126,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-  import { type Post, PostService } from '@/api/system/post'
+  import { type DictType, DictTypeService } from '@/api/system/dict/type'
   import { useTable } from '@/composables/useTable'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { downloadFile } from '@/utils/http'
@@ -139,25 +134,26 @@
   import useDict from '@/composables/useDict'
   import ArtDict from '@/components/core/forms/art-dict/index.vue'
 
-  defineOptions({ name: 'Posts' })
+  defineOptions({ name: 'DictType' })
 
   const { hasAuth } = useAuth()
   // 字典
   const { dict } = useDict(['sys_normal_disable'])
   // 接口
-  const { listPost, addPost, updatePost, getPost, delPost } = PostService
+  const { listDictType, addDictType, updateDictType, getDictType, delDictType } = DictTypeService
 
   // 定义表单搜索初始值
   const initialSearchState = {
-    postName: undefined,
+    dictName: undefined,
+    dictType: undefined,
     status: undefined
   }
 
   // 搜索项配置
   const formItems = computed<SearchFormItem[]>(() => [
     {
-      label: '岗位名称',
-      prop: 'postName',
+      label: '字典名称',
+      prop: 'dictName',
       type: 'input',
       config: { clearable: true }
     },
@@ -198,10 +194,10 @@
     onPageSizeChange,
     onCurrentPageChange,
     refreshAll
-  } = useTable<Post>({
+  } = useTable<DictType>({
     // 核心配置
     core: {
-      apiFn: listPost,
+      apiFn: listDictType,
       apiParams: {
         pageNum: 1,
         pageSize: 10,
@@ -209,10 +205,11 @@
       },
       columnsFactory: () => [
         { type: 'selection' }, // 勾选列
-        { label: '岗位编码', prop: 'postCode' },
-        { label: '岗位名称', prop: 'postName', align: 'center' },
-        { label: '显示顺序', prop: 'postSort', align: 'center' },
+        { label: '字典名称', prop: 'dictName' },
+        { label: '字典类型', prop: 'dictType', align: 'center' },
         { label: '状态', prop: 'status', align: 'center', useSlot: true },
+        { label: '备注', prop: 'remark', align: 'center' },
+        // { label: '创建者', prop: 'createBy', align: 'center' },
         { label: '创建时间', prop: 'createTime', align: 'center', useSlot: true },
         {
           prop: 'operation',
@@ -222,12 +219,12 @@
           fixed: 'right', // 固定列
           formatter: (row) =>
             h('div', { style: 'display: flex; align-items: center;justify-content: center;' }, [
-              hasAuth('system:post:edit') &&
+              hasAuth('system:dict:edit') &&
                 h(ArtButtonTable, {
                   type: 'edit',
                   onClick: () => showDialog('edit', row)
                 }),
-              hasAuth('system:post:remove') &&
+              hasAuth('system:dict:remove') &&
                 h(ArtButtonTable, {
                   type: 'delete',
                   onClick: () => deleteRole(row)
@@ -239,7 +236,7 @@
   })
 
   // 选中行
-  const selectedRows = ref<Post[]>([])
+  const selectedRows = ref<DictType[]>([])
   const ids = ref<number[]>([])
   const single = ref<boolean>(true)
   const multiple = ref<boolean>(true)
@@ -248,43 +245,42 @@
    * 处理表格行选择变化
    * @param selection 行数据
    */
-  const handleSelectionChange = (selection: Post[]): void => {
+  const handleSelectionChange = (selection: DictType[]): void => {
     selectedRows.value = selection
-    ids.value = selection.map((item) => item.postId)
+    ids.value = selection.map((item) => item.dictId)
     single.value = selection.length !== 1
     multiple.value = !selection.length
   }
 
   const dialogVisible = ref(false)
-  const form = reactive<Partial<Post>>({})
+  const form = reactive<Partial<DictType>>({})
   const isEdit = ref(false)
   const formRef = ref<FormInstance>()
-  const dialogTitle = computed(() => (isEdit.value ? '编辑岗位信息' : '新增岗位信息'))
+  const dialogTitle = computed(() => (isEdit.value ? '编辑字典类型' : '新增字典类型'))
 
   const rules = reactive<FormRules>({
-    postCode: [{ required: true, message: '岗位编码不能为空', trigger: 'blur' }],
-    postName: [{ required: true, message: '岗位名称不能为空', trigger: 'blur' }],
-    postSort: [{ required: true, message: '显示顺序不能为空', trigger: 'blur' }]
+    dictName: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
+    dictType: [{ required: true, message: '字典类型不能为空', trigger: 'blur' }]
   })
 
   /**
-   * 显示新增/编辑岗位信息弹框
+   * 显示新增/编辑字典类型弹框
    * @param type 弹框类型 add/edit
-   * @param row Post
+   * @param row DictType
    */
-  const showDialog = async (type: string = 'add', row?: Post) => {
+  const showDialog = async (type: string = 'add', row?: DictType) => {
     try {
       isEdit.value = type === 'edit'
       resetForm() // 重置表单
-      const postId = row?.postId ? row.postId : (ids.value as unknown as number)
-      if (isEdit.value && postId) {
-        const { data } = await getPost(postId)
+      const dictId = row?.dictId ? row.dictId : (ids.value as unknown as number)
+      if (isEdit.value && dictId) {
+        const { data } = await getDictType(dictId)
         Object.assign(form, {
-          postId: data.postId ?? undefined,
-          postCode: data.postCode ?? undefined,
-          postName: data.postName ?? undefined,
-          postSort: data.postSort ?? undefined,
-          status: data.status ?? undefined
+          dictId: data.dictId ?? undefined,
+          dictName: data.dictName ?? undefined,
+          dictType: data.dictType ?? undefined,
+          status: data.status ?? undefined,
+          remark: data.remark ?? undefined
         })
       }
       dialogVisible.value = true
@@ -300,9 +296,9 @@
       if (valid) {
         try {
           if (isEdit.value) {
-            await updatePost(form as Post)
+            await updateDictType(form as DictType)
           } else {
-            await addPost(form as Post)
+            await addDictType(form as DictType)
           }
           ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
           dialogVisible.value = false
@@ -314,28 +310,27 @@
     })
   }
 
-  // 重置岗位信息表单
+  // 重置字典类型表单
   const resetForm = () => {
     formRef.value?.resetFields()
     Object.assign(form, {
-      postId: undefined,
-      postCode: undefined,
-      postName: undefined,
-      postSort: undefined,
+      dictId: undefined,
+      dictName: undefined,
+      dictType: undefined,
       status: undefined,
       remark: undefined
     })
   }
 
   /**
-   * 删除岗位信息
+   * 删除字典类型
    * @param row 行数据
    */
-  const deleteRole = async (row?: Post | null) => {
-    const postIds: string = row?.postId ? row.postId.toString() : ids.value.toString()
+  const deleteRole = async (row?: DictType | null) => {
+    const dictIds: string = row?.dictId ? row.dictId.toString() : ids.value.toString()
     try {
       await ElMessageBox.confirm('确定要删除所选项吗？', '提示', { type: 'warning' })
-      await delPost(postIds)
+      await delDictType(dictIds)
       ElMessage.success('删除成功')
       handleSearch()
     } catch {
@@ -348,9 +343,9 @@
    */
   const handleExport = () => {
     downloadFile(
-      'system/post/export',
+      'system/dict/type/export',
       { ...searchState },
-      '岗位信息列表_' + new Date().getTime() + '.xlsx'
+      '字典类型列表_' + new Date().getTime() + '.xlsx'
     )
   }
 </script>

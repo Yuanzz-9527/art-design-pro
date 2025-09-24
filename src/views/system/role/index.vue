@@ -271,7 +271,7 @@
     daterange: []
   }
   // 表单配置项
-  const formItems: SearchFormItem[] = [
+  const formItems = computed<SearchFormItem[]>(() => [
     {
       label: '角色名称',
       prop: 'roleName',
@@ -295,10 +295,6 @@
       config: {
         clearable: true
       },
-      // options: [
-      //   { label: '启用', value: '0' },
-      //   { label: '停用', value: '1' }
-      // ]
       options: dict.sys_normal_disable
     },
     {
@@ -311,7 +307,7 @@
         endPlaceholder: '结束时间'
       }
     }
-  ]
+  ])
 
   // 响应式表单数据
   const formFilters = reactive({ ...initialSearchState })
