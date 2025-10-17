@@ -17,7 +17,7 @@ export interface Dept {
 export class DeptService {
   // 查询部门列表
   static listDept(params?: Record<string, unknown>) {
-    return request.get<Api.Common.DataResponse<Dept[]>>({
+    return request.get<Http.BaseResponse<Dept[]>>({
       url: '/system/dept/list',
       params
     })
@@ -25,7 +25,7 @@ export class DeptService {
 
   // 查询部门详细
   static getDept(deptId: number) {
-    return request.get<Api.Common.DataResponse<Dept>>({
+    return request.get<Http.BaseResponse<Dept>>({
       url: '/system/dept/' + deptId
     })
   }
@@ -55,7 +55,7 @@ export class DeptService {
 
   // 查询部门列表（排除节点）
   static listDeptExcludeChild(deptId: number) {
-    return request.get<Api.Common.DataResponse<Dept[]>>({
+    return request.get<Http.BaseResponse<Dept[]>>({
       url: '/system/dept/list/exclude/' + deptId
     })
   }

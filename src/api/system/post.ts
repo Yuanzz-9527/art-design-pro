@@ -11,7 +11,7 @@ export interface Post {
 export class PostService {
   // 查询岗位信息列表
   static listPost(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
-    return request.get<Api.Common.ListResponse<Post[]>>({
+    return request.get<Http.ListResponse<Post>>({
       url: '/system/post/list',
       params
     })
@@ -19,7 +19,7 @@ export class PostService {
 
   // 查询岗位信息详细
   static getPost(postId: number) {
-    return request.get<Api.Common.DataResponse<Post>>({
+    return request.get<Http.BaseResponse<Post>>({
       url: '/system/post/' + postId
     })
   }

@@ -11,7 +11,7 @@ export interface DictType {
 export class DictTypeService {
   // 查询字典类型列表
   static listDictType(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
-    return request.get<Api.Common.ListResponse<DictType[]>>({
+    return request.get<Http.ListResponse<DictType[]>>({
       url: '/system/dict/type/list',
       params
     })
@@ -19,7 +19,7 @@ export class DictTypeService {
 
   // 查询字典类型详细
   static getDictType(dictId: number) {
-    return request.get<Api.Common.DataResponse<DictType>>({
+    return request.get<Http.BaseResponse<DictType>>({
       url: '/system/dict/type/' + dictId
     })
   }
@@ -50,14 +50,14 @@ export class DictTypeService {
   // 刷新字典缓存
   static refreshCache() {
     return request.del({
-      url: '/system/dict/dict/type/refreshCache'
+      url: '/system/dict/type/refreshCache'
     })
   }
 
   // 获取字典选择框列表
   static optionselect() {
-    return request.get<Api.Common.DataResponse<DictType>>({
-      url: '/system/dict/dict/type/optionselect'
+    return request.get<Http.BaseResponse<DictType>>({
+      url: '/system/dict/type/optionselect'
     })
   }
 }

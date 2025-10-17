@@ -20,7 +20,7 @@ export interface Role {
 export class RoleService {
   // 查询角色列表
   static listRole(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
-    return request.get<Api.Common.ListResponse<Role>>({
+    return request.get<Http.ListResponse<Role>>({
       url: '/system/role/list',
       params
     })
@@ -28,7 +28,7 @@ export class RoleService {
 
   // 查询角色详细
   static getRole(roleId: number) {
-    return request.get<Api.Common.DataResponse<Role>>({
+    return request.get<Http.BaseResponse<Role>>({
       url: '/system/role/' + roleId
     })
   }
@@ -77,16 +77,16 @@ export class RoleService {
   }
 
   // 查询角色已授权用户列表
-  static allocatedUserList(params: Api.Common.PaginatingSearchParams) {
-    return request.get<Api.Common.ListResponse<User>>({
+  static allocatedUserList(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
+    return request.get<Http.ListResponse<User>>({
       url: '/system/role/authUser/allocatedList',
       params
     })
   }
 
   // 查询角色未授权用户列表
-  static unallocatedUserList(params: Api.Common.PaginatingSearchParams) {
-    return request.get<Api.Common.ListResponse<User>>({
+  static unallocatedUserList(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
+    return request.get<Http.ListResponse<User>>({
       url: '/system/role/authUser/unallocatedList',
       params
     })
@@ -130,7 +130,7 @@ export class RoleService {
 
   // 根据角色ID查询部门树结构
   static deptTreeSelect(roleId: number) {
-    return request.get<Api.Common.DataResponse>({
+    return request.get<Http.BaseResponse>({
       url: '/system/role/deptTree/' + roleId
     })
   }

@@ -27,7 +27,7 @@ interface RuoyiMenu {
 export const menuService = {
   async getMenuList(): Promise<MenuResponse> {
     try {
-      const { data } = await request.get<Api.Common.DataResponse<RuoyiMenu[]>>({
+      const { data } = await request.get<Http.BaseResponse<RuoyiMenu[]>>({
         url: '/getRouters'
       })
       if (!data.length) {
@@ -56,15 +56,15 @@ const ruoyiMenu2AppRouteRecord = (menuList: RuoyiMenu[]): AppRouteRecord[] => {
       component:
         menu.component === 'Layout'
           ? RoutesAlias.Layout
-          : menu.component.startsWith('/')
-            ? menu.component
+          : menu.component?.startsWith('/')
+            ? menu.component || ''
             : '/' + menu.component,
       meta: {
-        title: menu.meta.title,
-        icon: menu.meta.icon,
-        keepAlive: !menu.meta.noCache,
-        link: menu.meta.link ?? '',
-        isIframe: menu.meta.link ? true : false,
+        title: menu.meta?.title,
+        icon: menu.meta?.icon,
+        keepAlive: !menu.meta?.noCache,
+        link: menu.meta?.link ?? '',
+        isIframe: menu.meta?.link ? true : false,
         isHide: menu.hidden,
         query: menu.query // 保留 query
       }

@@ -81,7 +81,7 @@ axiosInstance.interceptors.request.use(
 
 // 响应拦截器
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse<Api.Http.BaseResponse>) => {
+  (response: AxiosResponse<Http.BaseResponse>) => {
     const { code, msg } = response.data
     // 二进制数据则直接返回
     if (
@@ -143,7 +143,7 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
   }
 
   try {
-    const res = await axiosInstance.request<Api.Http.BaseResponse<T>>(config)
+    const res = await axiosInstance.request<Http.BaseResponse<T>>(config)
     return res.data as T
   } catch (error) {
     if (error instanceof HttpError) {

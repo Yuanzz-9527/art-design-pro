@@ -23,7 +23,7 @@ export interface User {
 export class UserService {
   // 用户列表
   static listUser(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
-    return request.get<Api.Common.ListResponse<User>>({
+    return request.get<Http.ListResponse<User>>({
       url: '/system/user/list',
       params
     })
@@ -32,14 +32,14 @@ export class UserService {
   // 查询用户详细
   static getUser(userId?: number | number[]) {
     const userId_ = userId ? userId.toString() : ''
-    return request.get<Api.Common.DataResponse<User>>({
+    return request.get<Http.BaseResponse<User>>({
       url: '/system/user/' + userId_
     })
   }
 
   // 新增用户
   static addUser(params: Partial<User>) {
-    return request.post<Api.Common.DataResponse>({
+    return request.post<Http.BaseResponse>({
       url: '/system/user',
       params
     })
@@ -47,7 +47,7 @@ export class UserService {
 
   // 修改用户
   static updateUser(params: Partial<User>) {
-    return request.put<Api.Common.DataResponse>({
+    return request.put<Http.BaseResponse>({
       url: '/system/user',
       params
     })
@@ -137,7 +137,7 @@ export class UserService {
 
   // 查询部门下拉树结构
   static deptTreeSelect() {
-    return request.get<Api.Common.DataResponse<TreeData>>({
+    return request.get<Http.BaseResponse<TreeData>>({
       url: '/system/user/deptTree'
     })
   }

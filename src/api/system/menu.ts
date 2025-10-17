@@ -24,7 +24,7 @@ export interface Menu {
 export class MenuService {
   // 查询菜单列表
   static listMenu(params?: Record<string, unknown>) {
-    return request.get<Api.Common.DataResponse<Menu[]>>({
+    return request.get<Http.BaseResponse<Menu[]>>({
       url: '/system/menu/list',
       params
     })
@@ -32,21 +32,21 @@ export class MenuService {
 
   // 查询菜单详细
   static getMenu(menuId: number) {
-    return request.get<Api.Common.DataResponse<Menu>>({
+    return request.get<Http.BaseResponse<Menu>>({
       url: '/system/menu/' + menuId
     })
   }
 
   // 查询菜单下拉树结构
   static treeSelect() {
-    return request.get<Api.Common.DataResponse<TreeData>>({
+    return request.get<Http.BaseResponse<TreeData>>({
       url: '/system/menu/treeselect'
     })
   }
 
   // 根据角色ID查询菜单下拉树结构
   static roleMenuTreeselect(roleId: number) {
-    return request.get<Api.Common.DataResponse>({
+    return request.get<Http.BaseResponse>({
       url: '/system/menu/roleMenuTreeselect/' + roleId
     })
   }
