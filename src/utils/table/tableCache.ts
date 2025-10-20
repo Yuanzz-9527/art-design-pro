@@ -93,7 +93,7 @@ export class TableCache<T> {
     // 添加搜索条件标签
     const searchKeys = Object.keys(params).filter(
       (key) =>
-        !['current', 'size', 'total'].includes(key) &&
+        !['pageNum', 'pageSize', 'total'].includes(key) &&
         params[key] !== undefined &&
         params[key] !== '' &&
         params[key] !== null
