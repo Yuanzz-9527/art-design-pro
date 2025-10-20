@@ -14,7 +14,7 @@ import {
   updatePaginationFromResponse,
   createSmartDebounce,
   createErrorHandler
-} from '../utils/table/tableUtils'
+} from '@/utils/table/tableUtils'
 
 // 🚀 优化的配置接口 - 按功能域分组
 export interface UseTableConfig<
@@ -174,7 +174,7 @@ export function useTable<T = unknown, P extends BaseRequestParams = BaseRequestP
   )
 
   // 分页配置
-  const pagination = reactive<Api.Common.PaginatingParams>({
+  const pagination = reactive<Api.Common.PaginationParams>({
     pageNum: (searchParams as any)[pageKey] || 1,
     pageSize: (searchParams as any)[sizeKey] || 10,
     total: 0
