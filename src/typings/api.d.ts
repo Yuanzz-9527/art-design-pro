@@ -5,23 +5,10 @@
  * 在.vue文件使用会报错，需要在 eslint.config.mjs 中配置 globals: { Api: 'readonly' }
  */
 declare namespace Api {
-  /** 基础类型 */
-  namespace Http {
-    /** 基础响应 */
-    interface BaseResponse<T = any> {
-      // 状态码
-      code: number
-      // 消息
-      msg: string
-      // 数据
-      data: T
-    }
-  }
-
   /** 通用类型 */
   namespace Common {
     /** 分页参数 */
-    interface PaginatingParams {
+    interface PaginationParams {
       /** 当前页码 */
       pageNum: number
       /** 每页条数 */
@@ -31,25 +18,15 @@ declare namespace Api {
     }
 
     /** 通用搜索参数 */
-    type PaginatingSearchParams = Pick<PaginatingParams, 'pageNum' | 'pageSize'>
+    type PaginatingSearchParams = Pick<PaginationParams, 'pageNum' | 'pageSize'>
 
-    /** 启用状态 */
-    type EnableStatus = '1' | '2'
-
-    /** 通用数据响应 */
-    interface DataResponse<T = any> {
-      msg: string
-      data: T
-      code: number
-      [key: string]: any
-    }
-
-    /** 列表数据响应 */
-    interface ListResponse<T extends RouyiListItem = RouyiListItem> {
-      msg: string
-      rows: T[]
-      code: number
-      [key: string]: any
+    // 若依列表类型
+    interface RouyiListItem {
+      createBy?: string // 创建人
+      createTime?: string // 创建时间
+      remark?: string // 备注
+      updateBy?: string // 更新人
+      updateTime?: string // 更新时间
     }
   }
 
@@ -106,31 +83,6 @@ declare namespace Api {
       permissions: string[]
       roles: string[]
       user: UserInfo
-    }
-
-    /** 用户列表数据 */
-    interface UserListData {
-      records: UserListItem[]
-      current: number
-      size: number
-      total: number
-    }
-
-    /** 用户列表项 */
-    interface UserListItem {
-      id: number
-      avatar: string
-      createBy: string
-      createTime: string
-      updateBy: string
-      updateTime: string
-      status: '1' | '2' | '3' | '4' // 1: 在线 2: 离线 3: 异常 4: 注销
-      userName: string
-      userGender: string
-      nickName: string
-      userPhone: string
-      userEmail: string
-      userRoles: string[]
     }
   }
 }

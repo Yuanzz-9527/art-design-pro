@@ -1,0 +1,24 @@
+declare namespace Http {
+  /** 基础响应 */
+  interface BaseResponse<T = unknown> {
+    // 状态码
+    code: number
+    // 消息
+    msg: string
+    // 数据
+    data: T
+    // 可能有其他参数
+    [key: string]: any
+  }
+  /** 基础响应 */
+  interface ListResponse<T = unknown> {
+    // 状态码
+    code: number
+    // 消息
+    msg: string
+    // 数据
+    rows: T[]
+    // 可能有其他参数
+    [key: string]: any
+  }
+}

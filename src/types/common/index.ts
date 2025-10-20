@@ -17,15 +17,6 @@ export type ActionType = 'create' | 'update' | 'delete' | 'view'
 // 可选的记录类型
 export type Recordable<T = any> = Record<string, T>
 
-// 若依列表类型
-export interface RouyiListItem {
-  createBy?: string // 创建人
-  createTime?: string // 创建时间
-  remark?: string // 备注
-  updateBy?: string // 更新人
-  updateTime?: string // 更新时间
-}
-
 // 键值对类型
 export type KeyValue<T = any> = {
   key: string

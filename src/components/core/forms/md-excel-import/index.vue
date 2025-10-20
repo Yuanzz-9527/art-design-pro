@@ -93,7 +93,7 @@
    * 上传成功
    * @param response
    */
-  function handleFileSuccess(response: Api.Common.DataResponse) {
+  function handleFileSuccess(response: Http.BaseResponse) {
     dialogVisible.value = false
     isUploading.value = false
     ElMessageBox.alert(
