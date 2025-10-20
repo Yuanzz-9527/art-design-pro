@@ -217,6 +217,7 @@ function handleIframeRoute(
 ): void {
   converted.path = `/outside/iframe/${String(route.name)}`
   converted.component = () => import('@/views/outside/Iframe.vue')
+  route.path = converted.path
   iframeRoutes.push(route)
 }
 
