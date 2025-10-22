@@ -31,7 +31,7 @@
             修改</ElButton
           >
           <ElButton
-            @click="deleteRole()"
+            @click="handleRemove()"
             type="danger"
             plain
             :disabled="multiple"
@@ -230,7 +230,7 @@
               hasAuth('system:post:remove') &&
                 h(ArtButtonTable, {
                   type: 'delete',
-                  onClick: () => deleteRole(row)
+                  onClick: () => handleRemove(row)
                 })
             ])
         }
@@ -331,7 +331,7 @@
    * 删除岗位信息
    * @param row 行数据
    */
-  const deleteRole = async (row?: Post | null) => {
+  const handleRemove = async (row?: Post | null) => {
     const postIds: string = row?.postId ? row.postId.toString() : ids.value.toString()
     try {
       await ElMessageBox.confirm('确定要删除所选项吗？', '提示', { type: 'warning' })

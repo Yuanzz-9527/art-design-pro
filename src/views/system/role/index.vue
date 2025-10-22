@@ -32,7 +32,7 @@
             修改</ElButton
           >
           <ElButton
-            @click="deleteRole()"
+            @click="handleRemove()"
             type="danger"
             plain
             :disabled="multiple"
@@ -387,7 +387,7 @@
                 !row.admin &&
                 h(ArtButtonTable, {
                   type: 'delete',
-                  onClick: () => deleteRole(row)
+                  onClick: () => handleRemove(row)
                 }),
               !row.admin &&
                 h(ArtButtonMore, {
@@ -654,7 +654,7 @@
    * 删除角色
    * @param row 行数据
    */
-  const deleteRole = async (row?: Role | null) => {
+  const handleRemove = async (row?: Role | null) => {
     const roleIds: string | number = row?.roleId || ids.value.toString()
     try {
       await ElMessageBox.confirm(`确定要注销所选角色吗？`, '注销角色', {
