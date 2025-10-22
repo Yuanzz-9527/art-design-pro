@@ -270,3 +270,12 @@
   overflow-y: auto;
   transition: all 0.3s ease;
 }
+
+// 链接样式
+.link-type {
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}

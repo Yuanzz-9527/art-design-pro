@@ -18,7 +18,7 @@ export class DictTypeService {
   }
 
   // 查询字典类型详细
-  static getDictType(dictId: number) {
+  static getDictType(dictId: number | string) {
     return request.get<Http.BaseResponse<DictType>>({
       url: '/system/dict/type/' + dictId
     })
@@ -49,14 +49,14 @@ export class DictTypeService {
 
   // 刷新字典缓存
   static refreshCache() {
-    return request.del({
+    return request.del<Http.BaseResponse>({
       url: '/system/dict/type/refreshCache'
     })
   }
 
   // 获取字典选择框列表
   static optionselect() {
-    return request.get<Http.BaseResponse<DictType>>({
+    return request.get<Http.BaseResponse<DictType[]>>({
       url: '/system/dict/type/optionselect'
     })
   }

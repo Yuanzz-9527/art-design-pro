@@ -1,5 +1,5 @@
 <template>
-  <div class="type-page art-full-height">
+  <div class="dict-page art-full-height">
     <!-- 搜索栏 -->
     <ArtSearchBar
       v-model:filter="formFilters"
@@ -40,22 +40,7 @@
           >
             删除</ElButton
           >
-          <ElButton
-            @click="handleExport()"
-            type="warning"
-            plain
-            v-auth="'system:dict:export'"
-            v-ripple
-            >导出</ElButton
-          >
-          <ElButton
-            @click="handleClear()"
-            type="danger"
-            plain
-            v-auth="'system:dict:remove'"
-            v-ripple
-            >清理缓存
-          </ElButton>
+          <ElButton @click="handleClose()" type="warning" plain v-ripple> 关闭</ElButton>
         </template>
       </ArtTableHeader>
 
@@ -75,12 +60,9 @@
         <template #createTime="{ value }">
           <span>{{ parseTime(value, '{y}-{m}-{d}') }}</span>
         </template>
-        <template #dictType="{ row, value }">
-          <span class="link-type" @click="goTo(row)">{{ value }}</span>
-        </template>
       </ArtTable>
 
-      <!-- 新增/编辑字典类型弹框 -->
+      <!-- 新增/编辑字典数据弹框 -->
       <ElDialog
         :title="dialogTitle"
         v-model="dialogVisible"
@@ -91,15 +73,47 @@
         <ElForm ref="formRef" :model="form" :rules="rules" label-width="85px">
           <ElRow>
             <ElCol :span="24">
-              <ElFormItem label="字典名称" prop="dictName">
-                <ElInput v-model="form.dictName" placeholder="请输入字典名称"></ElInput>
+              <ElFormItem label="字典类型" prop="dictType">
+                <ElSelect v-model="form.dictType" disabled placeholder="请选择字典类型">
+                  <ElOption label="请选择字典生成" value="" />
+                </ElSelect>
               </ElFormItem>
             </ElCol>
             <ElCol :span="24">
-              <ElFormItem label="字典类型" prop="dictType">
-                <ElInput v-model="form.dictType" placeholder="请输入字典类型"></ElInput>
+              <ElFormItem label="字典标签" prop="dictLabel">
+                <ElInput v-model="form.dictLabel" placeholder="请输入字典标签"></ElInput>
               </ElFormItem>
             </ElCol>
+            <ElCol :span="24">
+              <ElFormItem label="字典键值" prop="dictValue">
+                <ElInput v-model="form.dictValue" placeholder="请输入字典键值"></ElInput>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="24">
+              <ElFormItem label="样式属性" prop="cssClass">
+                <ElInput v-model="form.cssClass" placeholder="请输入样式属性"></ElInput>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="24">
+              <ElFormItem label="字典排序" prop="dictSort">
+                <ElInputNumber
+                  v-model="form.dictSort"
+                  style="width: 100%"
+                  :min="1"
+                  controls-position="right"
+                />
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="24">
+              <ElFormItem label="回显样式" prop="listClass">
+                <ElInput v-model="form.listClass" placeholder="请输入表格回显样式"></ElInput>
+              </ElFormItem>
+            </ElCol>
+            <!-- <ElCol :span="24">
+              <ElFormItem label="是否默认" prop="isDefault">
+                <ElInput v-model="form.isDefault" placeholder="请输入是否默认"></ElInput>
+              </ElFormItem>
+            </ElCol> -->
             <ElCol :span="24">
               <ElFormItem label="状态" prop="status">
                 <ElRadioGroup v-model="form.status">
@@ -114,7 +128,7 @@
             </ElCol>
             <ElCol :span="24">
               <ElFormItem label="备注" prop="remark">
-                <ElInput v-model="form.remark" type="textarea" placeholder="请输入内容" />
+                <ElInput v-model="form.remark" :rows="3" type="textarea" placeholder="请输入内容" />
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -132,31 +146,41 @@
 </template>
 
 <script setup lang="ts">
-  import { type DictType, DictTypeService } from '@/api/system/dict/type'
+  import { type DictItem, DictService } from '@/api/system/dict/data'
+  import { DictTypeService } from '@/api/system/dict/type'
   import { useTable } from '@/composables/useTable'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
-  import { downloadFile } from '@/utils/http'
   import type { FormInstance, FormRules } from 'element-plus'
-  import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElButton } from 'element-plus'
   import { useAuth } from '@/composables/useAuth'
   import { parseTime } from '@/utils'
-  import { SearchFormItem } from '@/types'
+  import { SearchFormItem, SearchChangeParams } from '@/types'
   import useDict from '@/composables/useDict'
   import ArtDict from '@/components/core/forms/art-dict/index.vue'
-  import { router } from '@/router'
+  import { useRoute } from 'vue-router'
+  import { useWorktabStore } from '@/store/modules/worktab'
 
-  defineOptions({ name: 'DictType' })
+  defineOptions({ name: 'DictData' })
 
   const { hasAuth } = useAuth()
   // 字典
-  const { dict, clearAllDict } = useDict(['sys_normal_disable'])
+  const { dict } = useDict(['sys_normal_disable'])
   // 接口
-  const { listDictType, addDictType, updateDictType, getDictType, delDictType, refreshCache } =
-    DictTypeService
+  const { listDictData, addDictData, updateDictData, getDictData, delDictData } = DictService
+  const { optionselect, getDictType } = DictTypeService
+  const route = useRoute()
+  const worktabStore = useWorktabStore()
 
   // 定义表单搜索初始值
-  const initialSearchState = {
-    dictName: undefined,
+  const initialSearchState: {
+    dictLabel?: string
+    dictValue?: string
+    dictType?: string
+    status?: string | number
+  } = {
+    dictLabel: undefined,
+    dictValue: undefined,
     dictType: undefined,
     status: undefined
   }
@@ -165,7 +189,15 @@
   const formItems = computed<SearchFormItem[]>(() => [
     {
       label: '字典名称',
-      prop: 'dictName',
+      prop: 'dictType',
+      type: 'select',
+      config: { clearable: false },
+      options: dictOptions.value,
+      onChange: handleFormChange
+    },
+    {
+      label: '字典标签',
+      prop: 'dictLabel',
       type: 'input',
       config: { clearable: true }
     },
@@ -174,7 +206,8 @@
       prop: 'status',
       type: 'select',
       config: { clearable: true },
-      options: dict.sys_normal_disable
+      options: dict.sys_normal_disable,
+      onChange: handleFormChange
     }
   ])
 
@@ -184,13 +217,18 @@
   // 重置搜索
   const handleResetSearch = () => {
     Object.assign(formFilters, { ...initialSearchState })
-    resetSearch()
+    Object.assign(searchState, { ...formFilters })
+    searchData()
   }
 
   // 搜索处理
   const handleSearch = () => {
     Object.assign(searchState, { ...formFilters })
     searchData()
+  }
+  const handleFormChange = (params: SearchChangeParams): void => {
+    console.log('表单项变更:', params)
+    handleSearch()
   }
 
   // 列表数据构建
@@ -202,26 +240,29 @@
     paginationState,
     searchData,
     searchState,
-    resetSearch,
     onPageSizeChange,
     onCurrentPageChange,
     refreshAll
-  } = useTable<DictType>({
+  } = useTable<DictItem>({
     // 核心配置
     core: {
-      apiFn: listDictType,
+      apiFn: listDictData,
       apiParams: {
         pageNum: 1,
         pageSize: 10,
         ...initialSearchState
       },
+      immediate: false,
       columnsFactory: () => [
         { type: 'selection' }, // 勾选列
-        { label: '字典名称', prop: 'dictName' },
-        { label: '字典类型', prop: 'dictType', align: 'center', useSlot: true },
+        { label: '字典标签', prop: 'dictLabel', align: 'center' },
+        { label: '字典键值', prop: 'dictValue', align: 'center' },
+        // { label: '字典类型', prop: 'dictType', align: 'center' },
+        { label: '样式属性', prop: 'cssClass', align: 'center' },
+        { label: '回显样式', prop: 'listClass', align: 'center' },
+        // { label: '是否默认', prop: 'isDefault', align: 'center' },
+        { label: '字典排序', prop: 'dictSort', align: 'center' },
         { label: '状态', prop: 'status', align: 'center', useSlot: true },
-        { label: '备注', prop: 'remark', align: 'center' },
-        // { label: '创建者', prop: 'createBy', align: 'center' },
         { label: '创建时间', prop: 'createTime', align: 'center', useSlot: true },
         {
           prop: 'operation',
@@ -244,57 +285,83 @@
             ])
         }
       ]
-    },
-    performance: {
-      enableCache: true //开启缓存
     }
   })
 
   // 选中行
-  const selectedRows = ref<DictType[]>([])
+  const selectedRows = ref<DictItem[]>([])
   const ids = ref<number[]>([])
   const single = ref<boolean>(true)
   const multiple = ref<boolean>(true)
+
+  const dictOptions = ref<{ label: string; value: string }[]>([])
+  /**
+   * 获取下拉数据，对应字典详情
+   */
+  const getDictSelect = async () => {
+    try {
+      const { data } = await optionselect()
+      dictOptions.value = data.map((item) => {
+        return { value: item.dictType, label: item.dictName ?? '' }
+      })
+      const id = route.params.dictId as string
+      const { data: dictData } = await getDictType(id)
+      initialSearchState.dictType = dictData.dictType
+      Object.assign(formFilters, { ...initialSearchState })
+      Object.assign(searchState, { ...formFilters })
+      searchData()
+    } catch {
+      //
+    }
+  }
+  getDictSelect()
 
   /**
    * 处理表格行选择变化
    * @param selection 行数据
    */
-  const handleSelectionChange = (selection: DictType[]): void => {
+  const handleSelectionChange = (selection: DictItem[]): void => {
     selectedRows.value = selection
-    ids.value = selection.map((item) => item.dictId)
+    ids.value = selection.map((item) => item.dictCode)
     single.value = selection.length !== 1
     multiple.value = !selection.length
   }
 
   const dialogVisible = ref(false)
-  const form = reactive<Partial<DictType>>({})
+  const form = reactive<Partial<DictItem>>({})
   const isEdit = ref(false)
   const formRef = ref<FormInstance>()
-  const dialogTitle = computed(() => (isEdit.value ? '编辑字典类型' : '新增字典类型'))
+  const dialogTitle = computed(() => (isEdit.value ? '编辑字典数据' : '新增字典数据'))
 
   const rules = reactive<FormRules>({
-    dictName: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
-    dictType: [{ required: true, message: '字典类型不能为空', trigger: 'blur' }]
+    dictType: [{ required: true, message: '字典类型不能为空', trigger: 'change' }],
+    dictLabel: [{ required: true, message: '字典标签不能为空', trigger: 'blur' }],
+    dictValue: [{ required: true, message: '字典键值不能为空', trigger: 'blur' }],
+    dictSort: [{ required: true, message: '字典排序不能为空', trigger: 'blur' }]
   })
 
   /**
-   * 显示新增/编辑字典类型弹框
+   * 显示新增/编辑字典数据弹框
    * @param type 弹框类型 add/edit
-   * @param row DictType
+   * @param row DictItem
    */
-  const showDialog = async (type: string = 'add', row?: DictType) => {
+  const showDialog = async (type: string = 'add', row?: DictItem) => {
     try {
       isEdit.value = type === 'edit'
       resetForm() // 重置表单
-      const dictId = row?.dictId ? row.dictId : (ids.value as unknown as number)
-      if (isEdit.value && dictId) {
-        const { data } = await getDictType(dictId)
+      const dictCode = row?.dictCode ? row.dictCode : (ids.value as unknown as number)
+      if (isEdit.value && dictCode) {
+        const { data } = await getDictData(dictCode)
         Object.assign(form, {
-          dictId: data.dictId ?? undefined,
-          dictName: data.dictName ?? undefined,
+          dictCode: data.dictCode ?? undefined,
+          dictSort: data.dictSort ?? 1,
+          dictLabel: data.dictLabel ?? undefined,
+          dictValue: data.dictValue ?? undefined,
           dictType: data.dictType ?? undefined,
-          status: data.status ?? undefined,
+          cssClass: data.cssClass ?? undefined,
+          listClass: data.listClass ?? undefined,
+          // isDefault: data.isDefault ?? undefined,
+          status: data.status ?? '0',
           remark: data.remark ?? undefined
         })
       }
@@ -311,9 +378,9 @@
       if (valid) {
         try {
           if (isEdit.value) {
-            await updateDictType(form as DictType)
+            await updateDictData(form as DictItem)
           } else {
-            await addDictType(form as DictType)
+            await addDictData(form as DictItem)
           }
           ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
           dialogVisible.value = false
@@ -325,27 +392,32 @@
     })
   }
 
-  // 重置字典类型表单
+  // 重置字典数据表单
   const resetForm = () => {
     formRef.value?.resetFields()
     Object.assign(form, {
-      dictId: undefined,
-      dictName: undefined,
-      dictType: undefined,
-      status: undefined,
+      dictCode: undefined,
+      dictSort: 1,
+      dictLabel: undefined,
+      dictValue: undefined,
+      dictType: formFilters.dictType,
+      cssClass: undefined,
+      listClass: undefined,
+      // isDefault: undefined,
+      status: '0',
       remark: undefined
     })
   }
 
   /**
-   * 删除字典类型
+   * 删除字典数据
    * @param row 行数据
    */
-  const handleRemove = async (row?: DictType | null) => {
-    const dictIds: string = row?.dictId ? row.dictId.toString() : ids.value.toString()
+  const handleRemove = async (row?: DictItem | null) => {
+    const dictCodes: string = row?.dictCode ? row.dictCode.toString() : ids.value.toString()
     try {
       await ElMessageBox.confirm('确定要删除所选项吗？', '提示', { type: 'warning' })
-      await delDictType(dictIds)
+      await delDictData(dictCodes)
       ElMessage.success('删除成功')
       handleSearch()
     } catch {
@@ -354,33 +426,10 @@
   }
 
   /**
-   * 导出列表excel
+   * 关闭当前页面
    */
-  const handleExport = () => {
-    downloadFile(
-      'system/dict/type/export',
-      { ...searchState },
-      '字典类型列表_' + new Date().getTime() + '.xlsx'
-    )
-  }
-  /**
-   * 清理字典缓存
-   */
-  const handleClear = async () => {
-    try {
-      await refreshCache()
-      ElMessage.success('操作成功')
-      clearAllDict()
-    } catch {
-      //
-    }
-  }
-
-  /**
-   * 跳转到字典明细
-   */
-  const goTo = (row: DictType) => {
-    router.push({ name: 'DictData', params: { dictId: row.dictId } })
+  const handleClose = () => {
+    worktabStore.removeTab(route.path)
   }
 </script>
 

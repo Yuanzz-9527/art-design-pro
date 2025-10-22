@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { DictService } from '@/api/system/dict'
+import { DictService } from '@/api/system/dict/data'
 
 // 全局缓存（内存级）
 const dictCache: Record<string, any[]> = {}
@@ -37,5 +37,24 @@ export default function useDict(dictKeys: string[], options?: { forceRefresh?: b
     }
   })
 
-  return { dict }
+  /**
+   * 清理对应字典缓存
+   * @param keys
+   */
+  function clearDict(keys?: string[]) {
+    if (keys && keys.length) {
+      keys.forEach((k) => delete dictCache[k])
+    } else {
+      Object.keys(dictCache).forEach((k) => delete dictCache[k])
+    }
+  }
+
+  /**
+   * 清理所有缓存
+   */
+  function clearAllDict() {
+    Object.keys(dictCache).forEach((k) => delete dictCache[k])
+  }
+
+  return { dict, clearDict, clearAllDict }
 }

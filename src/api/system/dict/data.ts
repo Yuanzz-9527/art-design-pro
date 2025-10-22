@@ -19,7 +19,7 @@ export class DictService {
   // 查询字典数据列表
   static listDictData(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
     return request.get<Http.ListResponse<DictItem[]>>({
-      url: '/system/dict/data/type/list',
+      url: '/system/dict/data/list',
       params
     })
   }
@@ -27,14 +27,14 @@ export class DictService {
   // 查询字典数据详细
   static getDictData(dictCode: number) {
     return request.get<Http.BaseResponse<DictItem>>({
-      url: '/system/dict/data/type/' + dictCode
+      url: '/system/dict/data/' + dictCode
     })
   }
 
   // 新增字典数据
   static addDictData(params: DictItem) {
     return request.post({
-      url: '/system/dict/data/type',
+      url: '/system/dict/data',
       params
     })
   }
@@ -42,7 +42,7 @@ export class DictService {
   // 修改字典数据
   static updateDictData(params: DictItem) {
     return request.put({
-      url: '/system/dict/data/type',
+      url: '/system/dict/data',
       params
     })
   }
@@ -50,7 +50,7 @@ export class DictService {
   // 删除字典数据
   static delDictData(dictCode: number | string) {
     return request.del({
-      url: '/system/dict/data/type/' + dictCode
+      url: '/system/dict/data/' + dictCode
     })
   }
 

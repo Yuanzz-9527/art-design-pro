@@ -81,5 +81,22 @@ export const staticRoutes: AppRouteRecordRaw[] = [
         meta: { title: 'iframe' }
       }
     ]
+  },
+  // 字典项
+  {
+    path: '/system/dict-data',
+    component: () => import('@views/index/index.vue'),
+    meta: { title: '系统字典' },
+    children: [
+      {
+        path: '/system/dict-data/index/:dictId(\\d+)',
+        name: 'DictData',
+        component: () => import('@views/system/dict/data.vue'),
+        meta: {
+          title: '字典明细',
+          keepAlive: true
+        }
+      }
+    ]
   }
 ]
