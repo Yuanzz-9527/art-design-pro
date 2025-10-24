@@ -15,6 +15,7 @@ const RETRY_DELAY = 1000 // 重试延迟时间(毫秒)
 // 扩展 AxiosRequestConfig 类型
 interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showErrorMessage?: boolean
+  isParams?: boolean
 }
 
 const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
@@ -135,7 +136,10 @@ function shouldRetry(statusCode: number): boolean {
 // 请求函数
 async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
   // 对 POST | PUT 请求特殊处理
-  if (config.method?.toUpperCase() === 'POST' || config.method?.toUpperCase() === 'PUT') {
+  if (
+    (config.method?.toUpperCase() === 'POST' || config.method?.toUpperCase() === 'PUT') &&
+    !config.isParams
+  ) {
     if (config.params && !config.data) {
       config.data = config.params
       config.params = undefined

@@ -20,7 +20,7 @@
           <component
             class="art-page-view"
             :is="Component"
-            :key="route.path"
+            :key="route.fullPath"
             v-if="route.meta.keepAlive"
           />
         </KeepAlive>
@@ -31,7 +31,7 @@
         <component
           class="art-page-view"
           :is="Component"
-          :key="route.path"
+          :key="route.fullPath"
           v-if="!route.meta.keepAlive"
         />
       </Transition>

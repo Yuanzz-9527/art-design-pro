@@ -18,7 +18,7 @@ export interface DictItem extends Api.Common.RouyiListItem {
 export class DictService {
   // 查询字典数据列表
   static listDictData(params: Api.Common.PaginatingSearchParams & Record<string, unknown>) {
-    return request.get<Http.ListResponse<DictItem[]>>({
+    return request.get<Http.ListResponse<DictItem>>({
       url: '/system/dict/data/list',
       params
     })

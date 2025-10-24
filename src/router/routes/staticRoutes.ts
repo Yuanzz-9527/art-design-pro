@@ -84,17 +84,37 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   },
   // 字典项
   {
-    path: '/system/dict-data',
+    path: '/system-dict',
     component: () => import('@views/index/index.vue'),
     meta: { title: '系统字典' },
     children: [
       {
-        path: '/system/dict-data/index/:dictId(\\d+)',
+        path: '/system-dict/index/:dictId(\\d+)',
         name: 'DictData',
         component: () => import('@views/system/dict/data.vue'),
         meta: {
-          title: '字典明细',
-          keepAlive: true
+          title: '字典数据',
+          keepAlive: true,
+          activePath: '/system/dict'
+        }
+      }
+    ]
+  },
+  // 修改生成信息
+  {
+    path: '/tool-gen',
+    component: () => import('@views/index/index.vue'),
+    meta: { title: '代码生成' },
+    name: 'ToolGen',
+    children: [
+      {
+        path: 'edit/:tableId(\\d+)',
+        name: 'ToolGenEdit',
+        component: () => import('@views/tool/gen/edit.vue'),
+        meta: {
+          title: '修改生成配置',
+          keepAlive: true,
+          activePath: '/tool/gen'
         }
       }
     ]
